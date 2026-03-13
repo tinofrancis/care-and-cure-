@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="mb-5 pb-4 border-bottom">
+    <h1 class="fw-900 text-primary mb-1">
+        <i class="fas fa-scanner-gun me-2 opacity-50"></i> Intelligent Medicine Scanner
+    </h1>
+    <p class="text-muted lead mb-0">Cross-reference your prescriptions with your clinical profile for safety alerts.</p>
+</div>
+
+<div class="row g-5">
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-lg h-100 rounded-5 overflow-hidden web-container-lite">
+            <div class="bg-primary p-5 text-center text-white position-relative overflow-hidden">
+                <div class="rounded-circle bg-white text-primary d-inline-flex p-4 mb-4 shadow-lg animate-pulse border border-4 border-white-glass">
+                    <i class="fas fa-camera-retro fa-3x"></i>
+                </div>
+                <h4 class="fw-900 mb-3">Vision AI Analysis</h4>
+                <p class="rgba-white-70 small mb-0 fw-600">Our computer vision system extracts medicine names and dosages directly from your clinical notes.</p>
+                <i class="fas fa-microchip position-absolute top-0 end-0 opacity-10" style="font-size: 10rem; transform: translate(20%, -20%);"></i>
+            </div>
+            
+            <div class="card-body p-5">
+                <div class="p-4 bg-primary-subtle border-0 rounded-4 d-flex align-items-start mb-0">
+                    <i class="fas fa-shield-check text-primary mt-1 me-3 fa-lg"></i>
+                    <div class="small fw-700 text-primary opacity-80">
+                         We verify extracted medications against your reported allergies ({{ profile.allergies|default:"None reported" }}) and core health metrics.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-5 web-container-lite p-0 overflow-hidden">
+            <div class="card-body p-5">
+                <form method="post" enctype="multipart/form-data" id="prescription-form">
+                    {% csrf_token %}
+                    
+                    <div class="mb-5">
+                        <label class="form-label extra-small fw-900 text-muted uppercase tracking-widest mb-3">Option 1: Manual Entry</label>
+                        <div class="input-group-premium shadow-inner-sm">
+                             <i class="fas fa-pen-nib opacity-50"></i>
+                             <input type="text" name="prescription_text" class="form-control-premium" placeholder="Enter medicine name or dosage instructions...">
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label extra-small fw-900 text-muted uppercase tracking-widest mb-3">Option 2: Optical Upload</label>
+                        <div class="p-5 bg-light rounded-5 border-2 border-dashed text-center position-relative transition-all hover-border-primary">
+                            <input type="file" name="prescription_image" class="position-absolute w-100 h-100 top-0 start-0 opacity-0 cursor-pointer" id="id_prescription_image">
+                            <div id="upload-placeholder">
+                                <div class="bg-white rounded-circle d-inline-flex p-4 mb-3 shadow-sm text-primary">
+                                    <i class="fas fa-upload fa-2x"></i>
+                                </div>
+                                <div class="fw-900 text-dark">Click to select clinical document</div>
+                                <div class="extra-small text-muted opacity-50 uppercase tracking-widest mt-2">Accepted: JPG, PNG, PDF (Max 10MB)</div>
+                            </div>
+                            
+                            <div id="image-preview-container" class="scan-container mt-0 d-none rounded-4 overflow-hidden shadow-premium">
+                                <img id="image-preview" src="#" alt="Preview" class="scan-image w-100">
+                                <div class="scan-line"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-end gap-3 pt-4 border-top">
+                        <a href="{% url 'dashboard' %}" class="btn btn-light rounded-pill px-4 fw-800 text-muted">Back to Portal</a>
+                        <button type="submit" class="btn btn-primary btn-lg shadow-premium py-3 px-5 rounded-pill fw-900" id="analyze-btn">
+                            Run Safety Check <i class="fas fa-bolt-lightning ms-2 small"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scanning Overlay Upgrade -->
+<div id="scanning-overlay" class="scanning-overlay glass-card">
+    <div class="text-center p-5 rounded-9 shadow-premium bg-white">
+        <div class="spinner-border text-primary mb-4" role="status" style="width: 4rem; height: 4rem; border-width: 0.3em;"></div>
+        <h2 class="fw-900 clinical-pulse">Scanning text...</h2>
+        <p class="text-muted fw-600 mb-0">Checking medicines for safety alerts...</p>
+    </div>
+</div>
+
+<style>
+    .cursor-pointer { cursor: pointer; }
+    .clinical-pulse {
+        background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 3s linear infinite;
+    }
+    .rounded-9 { border-radius: 2.5rem; }
+</style>
+{% endblock %}

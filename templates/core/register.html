@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="web-container shadow-premium animate-slideUp">
+    <div class="split-layout">
+        <!-- Info Panel (Desktop View) -->
+        <div class="info-panel d-none d-lg-flex" style="background: linear-gradient(135deg, var(--accent), var(--primary-dark), var(--primary));">
+            <div class="feature-tag">
+                <i class="fas fa-hospital-user"></i> Clinical Registration
+            </div>
+            <h1 class="display-4 fw-900 mb-4 text-white">Join the <br><span class="opacity-75">Expert Network.</span></h1>
+            <p class="lead mb-5 opacity-75">Create your clinical profile to start providing high-fidelity AI-assisted care and secure health tracking.</p>
+        </div>
+
+        <!-- Form Panel -->
+        <div class="form-panel p-5">
+            <div class="text-center mb-5">
+                <div class="rounded-circle-initials bg-accent-subtle d-inline-flex p-4 mb-4 shadow-sm animate-pulse" style="background: hsla(var(--accent-h), var(--accent-s), 95%); width: 80px; height: 80px;">
+                    <i class="fas fa-user-plus fa-2x text-accent" style="color: var(--accent)"></i>
+                </div>
+                <h2 class="fw-900 mb-1">Create Account</h2>
+                <p class="text-muted small fw-600">Join CureCare to secure your clinical data</p>
+            </div>
+
+            <form method="post" class="premium-form" id="register-form">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger py-2 border-0 rounded-4 shadow-sm mb-4 animate-shake extra-small">
+                    {% for error in form.non_field_errors %}
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-circle-exclamation me-2"></i>
+                        <span class="fw-700">{{ error }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-800 text-muted uppercase tracking-wider mb-2">Username</label>
+                        <div class="input-group-premium">
+                            <i class="fas fa-user"></i>
+                            <input type="text" name="username" class="form-control-premium" placeholder="e.g. jdoe88" required value="{{ form.username.value|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-800 text-muted uppercase tracking-wider mb-2">Email Address</label>
+                        <div class="input-group-premium">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" name="email" class="form-control-premium" placeholder="hello@example.com" required value="{{ form.email.value|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-800 text-muted uppercase tracking-wider mb-2">Age</label>
+                        <div class="input-group-premium">
+                            <i class="fas fa-calendar-day"></i>
+                            <input type="number" name="age" class="form-control-premium" placeholder="e.g. 25" required value="{{ form.age.value|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-800 text-muted uppercase tracking-wider mb-2">Password</label>
+                        <div class="input-group-premium">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" name="password1" class="form-control-premium" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-800 text-muted uppercase tracking-wider mb-2">Confirm Password</label>
+                        <div class="input-group-premium">
+                            <i class="fas fa-check"></i>
+                            <input type="password" name="password2" class="form-control-premium" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg shadow-premium py-3 rounded-pill fw-800 w-100 justify-content-center">
+                        Create Account <i class="fas fa-arrow-right-long ms-2"></i>
+                    </button>
+                </div>
+            </form>
+
+            <div class="text-center mt-5">
+                <p class="text-muted small fw-600">Already a member?</p>
+                <a href="{% url 'login' %}" class="btn btn-outline-primary w-100 rounded-pill py-2 justify-content-center fw-800">Login Instead</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-circle-initials {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Care & Cure | AI Clinical Support</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+</head>
+
+<body>
+    <!-- Hidden CSRF token for global JS usage (e.g. AI Chat) -->
+    <div style="display:none;">{% csrf_token %}</div>
+
+    <header>
+        <div class="container-fw d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-hand-holding-medical fa-lg me-3 text-primary"></i>
+                <h1 class="mb-0">Care & Cure</h1>
+            </div>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><i class="fas fa-th-large me-2"></i> Dashboard</a>
+                {% if user.is_patient %}
+                <a href="{% url 'patient_profile' %}" class="{% if request.resolver_match.url_name == 'patient_profile' %}active{% endif %}"><i class="fas fa-user-circle me-2"></i> My Profile</a>
+                {% elif user.is_doctor %}
+                <a href="{% url 'dashboard' %}#patients"><i class="fas fa-users-medical me-2"></i> My Patients</a>
+                {% endif %}
+                <a href="{% url 'logout' %}" class="btn btn-outline-primary btn-sm ms-4 rounded-pill px-4 fw-800">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-primary btn-sm ms-4 rounded-pill px-4 fw-800 shadow-sm">Join CureCare</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container-fw">
+            <p class="mb-0">© 2026 Care & Cure – Advanced AI-Driven Healthcare platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Common Allergy List for Autocomplete -->
+    <datalist id="allergy-list">
+        <option
+            value="Allergic Rhinitis (Hay Fever): Triggered by pollen, dust, or pet dander, causing sneezing, congestion, and itchy eyes.">
+        <option
+            value="Food Allergies: Immune-mediated reactions (often IgE-mediated) to foods like milk, eggs, peanuts, tree nuts, soy, wheat, fish, and shellfish.">
+        <option
+            value="Atopic Dermatitis (Eczema): Inflammatory skin condition resulting in itchy, red, or swollen skin.">
+        <option value="Allergic Asthma: Airway inflammation triggered by inhaled allergens.">
+        <option
+            value="Anaphylaxis: A severe, potentially life-threatening allergic reaction often caused by venom, food, or medication.">
+        <option value="Drug Allergies: Reactions to medications, including antibiotics (e.g., penicillin).">
+        <option value="Latex Allergy: Sensitivity to natural rubber products.">
+        <option
+            value="Oral Allergy Syndrome (Pollen-Food Allergy Syndrome): Itching/swelling in the mouth after eating certain raw fruits/vegetables due to cross-reactivity with pollen.">
+    </datalist>
+
+    <!-- Custom JS -->
+    <script src="{% static 'core/js/script.js' %}"></script>
+</body>
+
+</html>

@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="mb-5 pb-4 border-bottom">
+    <h1 class="fw-900 text-primary mb-1">
+        <i class="fas fa-microscope me-3 opacity-50"></i> Clinical Assessment Result
+    </h1>
+    <p class="text-muted lead mb-0">AI-generated health assessment based on your clinical inputs and medical records.</p>
+</div>
+
+<div class="row g-5">
+    <!-- Left Column: Risk and Alerts -->
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-lg rounded-5 overflow-hidden web-container-lite mb-4">
+            <div class="p-5 premium-gradient-bg text-center text-white">
+                <div class="position-relative d-inline-block mb-4">
+                    <svg class="risk-ring" width="220" height="220">
+                        <circle cx="110" cy="110" r="100" class="ring-bg"></circle>
+                        <circle cx="110" cy="110" r="100" class="ring-fill" id="risk-ring-fill"></circle>
+                    </svg>
+                    <div class="position-absolute top-50 start-50 translate-middle text-center">
+                        <div class="display-4 fw-900 text-white">{{ risk_score }}<span class="fs-4">%</span></div>
+                        <div class="extra-small uppercase fw-800 tracking-widest rgba-white-70">Clinical Risk</div>
+                    </div>
+                </div>
+                <h5 class="fw-900 mb-0">Predictive Score</h5>
+            </div>
+            <div class="p-5 bg-white">
+                <h6 class="extra-small fw-900 text-muted uppercase tracking-widest mb-4">Safety Notifications</h6>
+                <div class="row g-3">
+                    {% if drug_alerts %}
+                    {% for alert in drug_alerts %}
+                    <div class="col-12">
+                        <div class="alert-item rounded-4 p-4 border-start-thick shadow-inner-sm d-flex align-items-center bg-light-subtle">
+                            <div class="p-2 rounded-circle bg-danger-subtle text-danger me-4">
+                                <i class="fas fa-triangle-exclamation"></i>
+                            </div>
+                            <span class="fw-800 small text-dark opacity-75">{{ alert }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="col-12">
+                        <div class="alert bg-success-subtle text-success border-0 p-4 rounded-5 d-flex align-items-center shadow-sm">
+                            <div class="p-3 bg-white rounded-circle text-success me-4 shadow-sm">
+                                <i class="fas fa-circle-check fa-2x"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-900 mb-1">No Alerts Found</h6>
+                                <p class="extra-small fw-800 mb-0 opacity-75">Your clinical profile shows no immediate risks.</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Summary and Actions -->
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-5 web-container-lite p-0 overflow-hidden h-100">
+            <div class="card-body p-0 d-flex flex-column">
+                <div class="p-4 px-5 border-bottom bg-light-subtle d-flex align-items-center">
+                    <h5 class="mb-0 fw-900 text-dark">AI Clinical Summary</h5>
+                </div>
+                
+                <div class="p-5 flex-grow-1 position-relative">
+                    <div class="p-4 bg-light rounded-5 border border-white shadow-inner clinical-text-container" style="min-height: 400px;">
+                        <div class="clinical-text fw-700 text-dark opacity-80" style="font-size: 1.1rem;">
+                            {{ summary|linebreaks }}
+                        </div>
+                    </div>
+                    <i class="fas fa-quote-left position-absolute top-0 start-0 opacity-05" style="font-size: 10rem; margin-top: 5rem; margin-left: 2rem;"></i>
+                </div>
+
+                <div class="p-5 border-top bg-light-subtle d-flex justify-content-between align-items-center">
+                    <a href="{% url 'dashboard' %}" class="btn btn-light rounded-pill px-4 fw-800 text-muted">Return to Dashboard</a>
+                    <div class="d-flex gap-3">
+                         <button onclick="window.print()" class="btn btn-outline-primary rounded-pill px-4 fw-800">
+                            <i class="fas fa-file-pdf me-2"></i> Print Report
+                        </button>
+                        <a href="{% url 'analyze' %}" class="btn btn-primary shadow-premium rounded-pill px-5 fw-900">
+                            New Checkup <i class="fas fa-rotate ms-2 small"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const riskScore = parseInt("{{ risk_score }}") || 0;
+        const ring = document.getElementById('risk-ring-fill');
+        if (ring) {
+            const offset = 502 - (502 * riskScore) / 100;
+            setTimeout(() => {
+                ring.style.strokeDashoffset = offset;
+            }, 500);
+        }
+    });
+</script>
+
+<style>
+    .risk-ring { transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: hsla(210, 20%, 90%, 0.5); stroke-width: 12; }
+    .ring-fill {
+        fill: none;
+        stroke: var(--primary);
+        stroke-width: 12;
+        stroke-linecap: round;
+        stroke-dasharray: 502;
+        transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .border-start-thick { border-left: 6px solid var(--danger); }
+    .clinical-text { line-height: 1.8; letter-spacing: 0.01em; }
+    .opacity-05 { opacity: 0.05; }
+    .section-glass-dark { background: hsla(var(--primary-h), var(--primary-s), 98%, 0.5); }
+    @media print {
+        .btn, .navbar, .chat-widget { display: none !important; }
+        .glass-card { border: 1px solid #ddd !important; backdrop-filter: none !important; }
+    }
+</style>
+{% endblock %}

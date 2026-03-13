@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="web-container shadow-premium animate-slideUp">
+    <div class="split-layout">
+        <!-- Info Panel (Desktop View) -->
+        <div class="info-panel d-none d-lg-flex" style="background: linear-gradient(135deg, var(--accent), var(--primary-dark), var(--primary));">
+            <div class="feature-tag">
+                <i class="fas fa-shield-halved"></i> Clinical Access Portal
+            </div>
+            <h1 class="display-4 fw-900 mb-4 text-white">Advanced <br><span class="opacity-75">Health Analytics.</span></h1>
+            <p class="lead mb-5 opacity-75">Securely access your clinical vault, manage patient records, and utilize AI-driven diagnostic support tools.</p>
+        </div>
+
+        <!-- Form Panel -->
+        <div class="form-panel p-5">
+            <div class="text-center mb-5">
+                <div class="rounded-circle bg-primary-subtle d-inline-flex p-4 mb-4 shadow-sm animate-pulse">
+                    <i class="fas fa-lock fa-2x text-primary" id="lock-icon"></i>
+                </div>
+                <h2 class="fw-900 mb-1" id="login-header">Login</h2>
+                <p class="text-muted small fw-600">Enter your credentials to access your clinical vault</p>
+            </div>
+
+            <!-- Role Selector Tabs -->
+            <div class="role-selector mb-5 p-1 bg-light rounded-pill d-flex shadow-inner">
+                <button type="button" class="btn btn-sm flex-fill rounded-pill fw-800 py-2 active" id="patient-tab" onclick="switchRole('patient')">
+                    <i class="fas fa-user me-2"></i> Patient
+                </button>
+                <button type="button" class="btn btn-sm flex-fill rounded-pill fw-800 py-2" id="doctor-tab" onclick="switchRole('doctor')">
+                    <i class="fas fa-user-md me-2"></i> Doctor
+                </button>
+            </div>
+
+            <form action="{% url 'login' %}" method="post" class="premium-form" id="login-form">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="form-label small fw-800 text-muted uppercase tracking-wider mb-2">Username</label>
+                    <div class="input-group-premium">
+                        <i class="fas fa-at"></i>
+                        <input type="text" name="username" class="form-control-premium" placeholder="Your username" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-800 text-muted uppercase tracking-wider mb-2">Password</label>
+                    <div class="input-group-premium">
+                        <i class="fas fa-key"></i>
+                        <input type="password" name="password" class="form-control-premium" placeholder="Your password" required>
+                    </div>
+                </div>
+
+                {% if form.errors %}
+                <div class="alert alert-danger extra-small py-2 px-3 border-0 rounded-3 mb-4 fw-600">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Invalid credentials.
+                </div>
+                {% endif %}
+
+                <div class="d-grid gap-3">
+                    <button type="submit" class="btn btn-primary btn-lg shadow-premium py-3 rounded-4 fw-800 w-100 justify-content-center">
+                        Authorize Access <i class="fas fa-arrow-right-long ms-2"></i>
+                    </button>
+                </div>
+            </form>
+
+            <div class="text-center mt-5">
+                <p class="text-muted small fw-600">New to CureCare?</p>
+                <a href="{% url 'register' %}" class="btn btn-outline-primary w-100 rounded-pill py-2 justify-content-center fw-800">Register Here</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function switchRole(role) {
+        const patientTab = document.getElementById('patient-tab');
+        const doctorTab = document.getElementById('doctor-tab');
+        const loginIcon = document.getElementById('lock-icon');
+        const headerText = document.getElementById('login-header');
+        
+        if (role === 'patient') {
+            patientTab.classList.add('active');
+            doctorTab.classList.remove('active');
+            if (loginIcon) loginIcon.className = 'fas fa-lock fa-2x text-primary';
+            if (headerText) headerText.innerText = 'Patient Login';
+        } else {
+            doctorTab.classList.add('active');
+            patientTab.classList.remove('active');
+            if (loginIcon) loginIcon.className = 'fas fa-user-md fa-2x text-secondary';
+            if (headerText) headerText.innerText = 'Doctor Login';
+        }
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => switchRole('patient'));
+</script>
+
+<style>
+    .role-selector {
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    .role-selector .btn {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none !important;
+        color: var(--text-muted);
+    }
+    .role-selector .btn.active {
+        background: var(--white) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+        color: var(--primary) !important;
+    }
+    #doctor-tab.active {
+        color: var(--secondary) !important;
+    }
+    .shadow-inner {
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .rounded-circle-initials {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+</style>
+{% endblock %}

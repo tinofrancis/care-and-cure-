@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="auth-wrapper d-flex align-items-center justify-content-center py-5">
+    <div class="col-md-8 col-lg-7">
+        <div class="card border-0 shadow-lg overflow-hidden glass-card animate-slideUp">
+            <div class="card-body p-5">
+                <div class="text-center mb-5">
+                    <div class="d-inline-flex p-4 rounded-circle bg-secondary-subtle text-secondary mb-4 shadow-sm">
+                        <i class="fas fa-user-md fa-3x"></i>
+                    </div>
+                    <h2 class="fw-900 mb-1">Doctor Registration</h2>
+                    <p class="text-muted small">Join our medical team as a verified specialist.</p>
+                </div>
+
+                <form method="post" class="auth-form" id="doctor-register-form">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-3 border-0 rounded-4 shadow-sm mb-4 animate-shake">
+                        {% for error in form.non_field_errors %}
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-circle-exclamation me-2"></i>
+                            <span class="small fw-700">{{ error }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-800 text-muted uppercase tracking-wider mb-2">Username</label>
+                            <div class="input-group-premium">
+                                <i class="fas fa-user"></i>
+                                <input type="text" name="username"
+                                    class="form-control-premium {% if form.username.errors %}is-invalid{% endif %}" required
+                                    id="id_username" value="{{ form.username.value|default:'' }}" placeholder="e.g. dr_smith">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-800 text-muted uppercase tracking-wider mb-2">Email Address</label>
+                            <div class="input-group-premium">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" name="email"
+                                    class="form-control-premium {% if form.email.errors %}is-invalid{% endif %}" required 
+                                    id="id_email" value="{{ form.email.value|default:'' }}" placeholder="smith@hospital.org">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-800 text-muted uppercase tracking-wider mb-2">Password</label>
+                            <div class="input-group-premium">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" name="password1"
+                                    class="form-control-premium {% if form.password1.errors %}is-invalid{% endif %}" required
+                                    id="id_password1" placeholder="Minimum 8 characters">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-800 text-muted uppercase tracking-wider mb-2">Confirm Password</label>
+                            <div class="input-group-premium">
+                                <i class="fas fa-check"></i>
+                                <input type="password" name="password2"
+                                    class="form-control-premium {% if form.password2.errors %}is-invalid{% endif %}" required
+                                    id="id_password2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clinical-creds-section p-4 bg-secondary-subtle rounded-5 mb-5 border border-white shadow-inner" style="background: hsla(var(--secondary-h), var(--secondary-s), 96%)">
+                        <h5 class="fw-900 mb-4 d-flex align-items-center" style="color: var(--secondary)">
+                            <i class="fas fa-graduation-cap me-2"></i> Medical Credentials
+                        </h5>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-800 text-muted uppercase tracking-wider mb-2">Degrees</label>
+                                <div class="input-group-premium">
+                                    <i class="fas fa-certificate"></i>
+                                    <input type="text" name="degree" class="form-control-premium" id="id_degree" placeholder="MBBS, MD, etc.">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-800 text-muted uppercase tracking-wider mb-2">Specialty</label>
+                                <div class="input-group-premium">
+                                    <i class="fas fa-stethoscope"></i>
+                                    <input type="text" name="specialist" class="form-control-premium" id="id_specialist" placeholder="e.g. Cardiologist">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-secondary btn-lg shadow-premium py-3 rounded-4 fw-800" style="background: var(--secondary); border: none;">
+                            Register as Doctor <i class="fas fa-check-circle ms-2"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <p class="text-muted small fw-600">Already have an account? <a href="{% url 'login' %}" class="text-secondary text-decoration-none fw-800">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

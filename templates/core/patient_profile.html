@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="mb-5 pb-4 border-bottom">
+    <h1 class="fw-900 text-primary mb-1">
+        <i class="fas fa-id-card-clip me-3 opacity-50"></i> Personal Health File
+    </h1>
+    <p class="text-muted lead mb-0">Manage your clinical profile, allergies, and historical medical records.</p>
+</div>
+
+<div class="row g-5">
+    <!-- Sidebar Meta info -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-5 overflow-hidden web-container-lite text-center p-0">
+            <div class="p-5 premium-gradient-bg">
+                <div class="rounded-circle-initials bg-white text-primary p-4 shadow-lg mx-auto mb-4 border border-4 border-white-glass fw-900" style="width: 120px; height: 120px; font-size: 3rem;">
+                    {{ user.username|first|upper }}
+                </div>
+                <h3 class="fw-900 text-white mb-1">{{ user.get_full_name|default:user.username }}</h3>
+                <span class="badge bg-white-20 text-white rounded-pill px-4 py-2 small fw-700">Patient ID: cc-{{ profile.id|stringformat:"04d" }}</span>
+            </div>
+            <div class="p-5 bg-white text-start">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle bg-light p-3 me-3 text-primary"><i class="fas fa-envelope"></i></div>
+                    <div>
+                        <div class="extra-small fw-800 text-muted uppercase tracking-widest">Email Access</div>
+                        <div class="fw-800">{{ user.email }}</div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center mb-0">
+                    <div class="rounded-circle bg-light p-3 me-3 text-primary"><i class="fas fa-calendar-check"></i></div>
+                    <div>
+                        <div class="extra-small fw-800 text-muted uppercase tracking-widest">Joined Date</div>
+                        <div class="fw-800">{{ user.date_joined|date:"M Y" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-5 mt-4 p-5 bg-primary text-white position-relative overflow-hidden">
+            <div class="position-relative z-index-1">
+                <h6 class="fw-900 mb-3"><i class="fas fa-shield-halved me-2"></i> Clinical Privacy</h6>
+                <p class="small opacity-75 mb-0">Your profile data is strictly clinical and shared only with your authorized care team.</p>
+            </div>
+            <i class="fas fa-lock position-absolute bottom-0 end-0 opacity-10" style="font-size: 8rem; margin-right: -2rem; margin-bottom: -2rem;"></i>
+        </div>
+    </div>
+
+    <!-- Main Configuration Area -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-5 web-container-lite p-0 overflow-hidden">
+            <div class="card-body p-0">
+                <div class="p-4 px-5 border-bottom bg-light-subtle d-flex align-items-center">
+                    <h5 class="mb-0 fw-900 text-dark">Profile Settings & Clinical Data</h5>
+                </div>
+                
+                <form method="post" enctype="multipart/form-data" class="premium-form p-5">
+                    {% csrf_token %}
+                    
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <label class="form-label extra-small fw-900 text-muted uppercase tracking-widest mb-2">Age (Years)</label>
+                            <div class="input-group-premium">
+                                <i class="fas fa-birthday-cake opacity-50"></i>
+                                <input type="number" name="age" class="form-control-premium" id="id_age" value="{{ profile.age|default:'' }}" placeholder="e.g. 25">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label extra-small fw-900 text-muted uppercase tracking-widest mb-2">Gender Category</label>
+                            <select name="gender" class="form-select-premium w-100" id="id_gender">
+                                <option value="M" {% if profile.gender == 'M' %}selected{% endif %}>Male</option>
+                                <option value="F" {% if profile.gender == 'F' %}selected{% endif %}>Female</option>
+                                <option value="O" {% if profile.gender == 'O' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label extra-small fw-900 text-muted uppercase tracking-widest mb-2">
+                             Allergic Sensitivities
+                        </label>
+                        {{ form.allergies }}
+                        <div class="form-text extra-small mt-2 px-1 text-danger fw-700">
+                             <i class="fas fa-info-circle me-1"></i> Crucial for cross-referencing AI medical warnings.
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label extra-small fw-900 text-muted uppercase tracking-widest mb-2">
+                            Comprehensive Medical History
+                        </label>
+                        <textarea name="medical_details" class="form-control-premium px-4 pt-3" rows="5" id="id_medical_details" placeholder="Describe any past surgeries, chronic conditions, or long-term medications...">{{ profile.medical_details }}</textarea>
+                    </div>
+
+                    <div class="p-4 bg-light rounded-4 mb-5 shadow-inner-sm border">
+                        <h6 class="extra-small fw-900 uppercase tracking-widest mb-3 text-muted">Clinical Documentation Repository</h6>
+                        <div class="mb-0">
+                            {{ form.lab_reports }}
+                            {% if profile.lab_reports %}
+                            <div class="mt-3 p-3 bg-white rounded-4 shadow-sm d-flex justify-content-between align-items-center border border-primary-subtle">
+                                <span class="small fw-800 text-dark">
+                                    <i class="fas fa-file-pdf me-2 text-danger f-lg"></i> {{ profile.lab_reports.name|truncatechars:30 }}
+                                </span>
+                                <a href="{{ profile.lab_reports.url }}" target="_blank" class="btn btn-primary btn-sm rounded-pill px-4 fw-800">
+                                    View Repository <i class="fas fa-external-link-alt small ms-2"></i>
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-end gap-3 pt-3 border-top mt-5">
+                        <a href="{% url 'dashboard' %}" class="btn btn-light rounded-pill px-4 fw-800 text-muted">Discard Changes</a>
+                        <button type="submit" class="btn btn-primary btn-lg shadow-premium py-3 px-5 rounded-pill fw-900">
+                            Synchronize Profile <i class="fas fa-rotate ms-2 small"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-select-premium {
+        padding: 0.75rem 1.25rem;
+        background: var(--white);
+        border: 2px solid var(--light);
+        border-radius: 12px;
+        font-weight: 600;
+        font-family: var(--font-main);
+        transition: var(--transition);
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath fill='%2364748b' d='M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1.25rem center;
+        background-size: 1rem;
+    }
+    textarea.form-control-premium {
+        padding-left: 1.5rem !important;
+    }
+    .section-glass-dark {
+        background: hsla(var(--primary-h), var(--primary-s), 98%, 0.5);
+    }
+</style>
+{% endblock %}

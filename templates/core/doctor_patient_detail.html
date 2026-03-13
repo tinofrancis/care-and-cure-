@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-11 col-lg-10">
+        <div class="card border-0 shadow-lg glass-card animate-slideUp">
+            <div class="card-body p-5">
+                <div class="d-flex justify-content-between align-items-start mb-5 pb-4 border-bottom">
+                    <div>
+                        <div class="badge bg-primary text-white mb-2 py-2 px-3 rounded-pill fw-800 uppercase tracking-widest small shadow-sm">
+                            Patient Health Report
+                        </div>
+                        <h2 class="fw-900 mb-0">Record for: {{ patient.user.get_full_name|default:patient.user.username }}</h2>
+                        <p class="text-muted small fw-600">Accessing record as Dr. {{ request.user.get_full_name|default:request.user.username }}</p>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-900 extra-small uppercase tracking-widest text-muted mb-2">Patient Status</div>
+                        <div class="d-flex align-items-center justify-content-end text-primary fw-800">
+                            <i class="fas fa-check-circle me-2"></i> Active
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-3">
+                        <div class="section-glass-dark p-4 rounded-5 h-100 border border-white">
+                            <h6 class="fw-900 text-primary uppercase tracking-widest small mb-4">Patient Info</h6>
+                            <div class="mb-3">
+                                <label class="extra-small uppercase fw-800 text-muted tracking-wider">Age / Gender</label>
+                                <div class="fw-800 text-dark">{{ patient.age|default:"N/A" }}y / {{ patient.get_gender_display|default:"N/A" }}</div>
+                            </div>
+                            <div class="mb-0">
+                                <label class="extra-small uppercase fw-800 text-muted tracking-wider">Member Since</label>
+                                <div class="fw-800 text-dark">{{ patient.user.date_joined|date:"M Y" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="section-glass-dark p-4 rounded-5 h-100 border border-white">
+                            <h6 class="fw-900 text-danger uppercase tracking-widest small mb-4">Safety & Allergies</h6>
+                            <p class="mb-0 small fw-700 text-dark opacity-75">
+                                <i class="fas fa-exclamation-triangle me-2 text-danger"></i>
+                                {{ patient.allergies|default:"No allergies reported." }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="section-glass-dark p-4 rounded-5 h-100 border border-white d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="fw-900 text-muted uppercase tracking-widest small mb-4">Health Documents</h6>
+                                <p class="mb-0 small fw-700 text-muted">Latest reports and scans</p>
+                            </div>
+                            {% if patient.lab_reports %}
+                            <a href="{{ patient.lab_reports.url }}" target="_blank" class="btn btn-primary rounded-circle p-3 shadow-premium">
+                                <i class="fas fa-file-pdf fa-lg"></i>
+                            </a>
+                            {% else %}
+                            <div class="p-3 rounded-circle bg-light text-muted">
+                                <i class="fas fa-file-excel fa-lg opacity-25"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-5">
+                    <div class="col-md-12">
+                        <div class="card border-0 rounded-9 bg-primary p-5 text-white mb-5 shadow-premium position-relative overflow-hidden">
+                             <div class="position-absolute top-0 end-0 opacity-10" style="font-size: 15rem; margin-right: -2rem; margin-top: -2rem;">
+                                <i class="fas fa-heart"></i>
+                             </div>
+                             <div class="row align-items-center">
+                                 <div class="col-md-3 text-center border-end border-white border-opacity-25">
+                                     <div class="display-4 fw-900 mb-0">{{ risk_score }}%</div>
+                                     <div class="extra-small uppercase fw-800 tracking-widest opacity-75">Health Risk Level</div>
+                                 </div>
+                                 <div class="col-md-9 ps-md-5">
+                                     <h5 class="fw-900 mb-3">AI Health Summary</h5>
+                                     <p class="mb-0 fw-600 opacity-90 small" style="line-height: 1.6;">{{ summary }}</p>
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-5">
+                    <div class="col-md-8">
+                        <h5 class="fw-900 mb-4 d-flex align-items-center">
+                            <i class="fas fa-chart-line text-primary me-2"></i> Current Health Numbers
+                        </h5>
+                        <div class="row g-3 mb-5 text-center">
+                            <div class="col-6 col-md-3">
+                                <div class="p-3 bg-white rounded-4 border-bottom border-4 border-danger shadow-sm h-100 transition-hover">
+                                    <div class="extra-small uppercase fw-800 text-muted mb-2 tracking-widest">Blood Pressure</div>
+                                    <h4 class="fw-900 text-dark mb-0">{% if patient.blood_pressure_systolic %}{{ patient.blood_pressure_systolic }}/{{ patient.blood_pressure_diastolic }}{% else %}--{% endif %}</h4>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="p-3 bg-white rounded-4 border-bottom border-4 border-success shadow-sm h-100 transition-hover">
+                                    <div class="extra-small uppercase fw-800 text-muted mb-2 tracking-widest">Blood Sugar</div>
+                                    <h4 class="fw-900 text-dark mb-0">{{ patient.blood_sugar|default:"--" }}</h4>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="p-3 bg-white rounded-4 border-bottom border-4 border-warning shadow-sm h-100 transition-hover">
+                                    <div class="extra-small uppercase fw-800 text-muted mb-2 tracking-widest">Heart Rate</div>
+                                    <h4 class="fw-900 text-dark mb-0">{{ patient.heart_rate|default:"--" }}</h4>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="p-3 bg-white rounded-4 border-bottom border-4 border-info shadow-sm h-100 transition-hover">
+                                    <div class="extra-small uppercase fw-800 text-muted mb-2 tracking-widest">Cholesterol</div>
+                                    <h4 class="fw-900 text-dark mb-0">{{ patient.cholesterol|default:"--" }}</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-900 mb-4 d-flex align-items-center">
+                             <i class="fas fa-user-edit text-muted me-2"></i> Patient's Own Notes
+                        </h5>
+                        <div class="p-4 bg-light rounded-5 border border-white shadow-inner">
+                            <p class="mb-0 fw-600 text-dark opacity-75 small" style="line-height: 1.7;">{{ patient.medical_details|linebreaks }}</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-premium rounded-9 overflow-hidden">
+                            <div class="bg-secondary p-4 text-white text-center">
+                                <h6 class="fw-900 mb-0 uppercase tracking-widest"><i class="fas fa-edit me-2"></i> Update Health Data</h6>
+                            </div>
+                            <div class="card-body p-4">
+                                <form method="POST" class="clinical-update-form">
+                                    {% csrf_token %}
+                                    <div class="clinical-fields-scroll" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+                                        {{ form.as_p }}
+                                    </div>
+                                    <button type="submit" class="btn btn-secondary w-100 rounded-pill py-3 fw-900 shadow-sm mt-4" style="background: var(--secondary); border: none;">
+                                        Save Changes
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-5 pt-4 border-top">
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary rounded-pill px-4 fw-800">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                    </a>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary rounded-pill px-4 fw-800">Patient Data</button>
+                        <button class="btn btn-primary rounded-pill px-4 fw-800 shadow-sm">Add Note</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .section-glass-dark { background: hsla(var(--primary-h), var(--primary-s), 98%, 0.5); }
+    .rounded-9 { border-radius: 2rem; }
+    .transition-hover:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05) !important; }
+    .clinical-update-form p { margin-bottom: 1.5rem; }
+    .clinical-update-form label { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #64748b; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+    .clinical-update-form input, .clinical-update-form select, .clinical-update-form textarea { width: 100%; padding: 0.75rem 1rem; border-radius: 12px; border: 2px solid #f1f5f9; font-weight: 600; transition: var(--transition); }
+    .clinical-update-form input:focus { outline: none; border-color: var(--secondary); box-shadow: 0 0 0 4px hsla(var(--secondary-h), var(--secondary-s), var(--secondary-l), 0.1); }
+</style>
+{% endblock %}
